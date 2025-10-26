@@ -1,8 +1,6 @@
 # Chat Application with File & Image Upload
 
-![Uploading image.png…]()
-
----
+![Chat UI Screenshot](./image.jpg)
 
 ## Description
 
@@ -32,4 +30,22 @@ This is a realtime chat application built with React.js and Node.js, featuring:
 ### Backend
 
 Create `.env` in `/server` folder:
+
+
+### Frontend
+
+Create `.env` in `/client` folder:
+
+
+---
+
+## Deployment
+
+The app is deployed live at:
+
+[https://mychat-client.onrender.com](https://mychat-client.onrender.com)
+
+Chat, upload images/files, and test it in real time from any device!
+
+
 
