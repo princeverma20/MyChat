@@ -52,9 +52,7 @@ Create `.env` in `/client` folder:
 
 The app is deployed live at:
 
-[https://mychat-client.onrender.com](https://mychat-client2.onrender.com)
-
-Chat, upload images/files, and test it in real time from any device!
+[https://mychat-client2.onrender.com](https://mychat-client2.onrender.com)
 
 
 
