@@ -2,14 +2,27 @@
 
 ![Chat UI Screenshot](./LiveChatImage.png)
 
+## Technologies Used
+
+- **React.js** (Frontend)
+- **Node.js** (Backend)
+- **Express.js** (Backend framework)
+- **Socket.io** (Realtime messaging)
+- **AWS S3** (File and image storage)
+- **Multer** (Multipart file handling in Express)
+- **Axios** (HTTP API requests in frontend)
+- **Render** (Cloud deployment for client/server)
+- **HTML5 & CSS3** (Responsive chat layout)
+- **Git/GitHub** (Version control and repo hosting)
+
+---
 ## Description
 
 This is a realtime chat application built with React.js and Node.js, featuring:
 
-- Real-time messaging via Socket.io
-- File and image uploads handled through AWS S3 storage
-- Responsive UI
-- Secure, scalable backend with cloud storage
+A real-time chat platform that enables users to exchange text and media files seamlessly. 
+The application integrates AWS S3 for secure and scalable file handling, 
+Socket.io for instant message delivery, and a Node.js + React.js tech stack for an efficient full-stack solution
 
 ---
 
