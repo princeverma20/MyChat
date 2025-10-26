@@ -1,4 +1,3 @@
-// index.js
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -10,14 +9,19 @@ require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: process.env.CLIENT_URL, methods: ["GET", "POST"] },
-});
 
-app.use(cors());
+const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:3000"].filter(
+  Boolean
+);
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
-// --------- AWS S3 Setup ---------
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -26,64 +30,54 @@ const s3Client = new S3Client({
   },
 });
 
-// --------- Multer (memory storage) ---------
-const upload = multer({ storage: multer.memoryStorage() }).single("file");
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 app.get("/", (req, res) => res.send("Server is running..."));
 
-// --------- File upload endpoint ---------
-app.post("/upload", async (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) return res.status(400).send({ message: err.message });
+app.post("/upload", upload.single("file"), async (req, res) => {
+  try {
     if (!req.file) return res.status(400).send({ message: "No file uploaded" });
 
-    try {
-      const uploadParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `uploads/${Date.now()}-${req.file.originalname}`,
-        Body: req.file.buffer,
-        ContentType: req.file.mimetype,
-      };
+    const cleanFilename = req.file.originalname.replace(/[^a-zA-Z0-9.]/g, "_");
 
-      const parallelUpload = new Upload({
-        client: s3Client,
-        params: uploadParams,
-      });
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: `uploads/${Date.now()}-${cleanFilename}`,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+      ACL: "public-read",
+    };
 
-      await parallelUpload.done();
+    const parallelUpload = new Upload({ client: s3Client, params });
+    await parallelUpload.done();
 
-      res.send({
-        message: "File uploaded successfully",
-        fileUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`,
-        fileType: req.file.mimetype,
-      });
-    } catch (error) {
-      console.error("Upload error:", error);
-      res.status(500).send({ message: error.message });
-    }
-  });
+    return res.status(200).send({
+      message: "File uploaded successfully",
+      fileUrl: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${params.Key}`,
+      fileType: req.file.mimetype,
+      fileName: cleanFilename,
+    });
+  } catch (error) {
+    console.error("Upload failed:", error);
+    return res.status(500).send({ message: error.message });
+  }
 });
 
-// --------- Socket.io ---------
+const io = new Server(server, {
+  cors: { origin: allowedOrigins, methods: ["GET", "POST"] },
+});
+
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  // Join a room
   socket.on("join_room", ({ username, room }) => {
     socket.join(room);
     console.log(`${username} joined room ${room}`);
   });
 
-  // Handle sending messages
   socket.on("send_message", (data) => {
-    io.to(data.room).emit("receive_message", {
-      author: data.author,
-      type: data.type,
-      message: data.message,
-      content: data.content,
-      name: data.name,
-      time: data.time,
-    });
+    io.to(data.room).emit("receive_message", data);
   });
 
   socket.on("disconnect", () => {

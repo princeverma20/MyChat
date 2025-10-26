@@ -7,11 +7,19 @@ export const uploadAndSend = async (file, sender, socket, setUploading) => {
 
   try {
     setUploading && setUploading(true);
-    const res = await axios.post("http://localhost:9000/upload", formData, {
+
+    const SERVER_URL =
+      process.env.REACT_APP_SERVER_URL || "http://localhost:9000";
+
+    const res = await axios.post(`${SERVER_URL}/upload`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    return { fileUrl: res.data.fileUrl, fileType: res.data.fileType, fileName: file.name };
+    return {
+      fileUrl: res.data.fileUrl,
+      fileType: res.data.fileType,
+      fileName: res.data.fileName || file.name,
+    };
   } catch (err) {
     console.error("Upload failed:", err);
     throw err;
@@ -41,8 +49,11 @@ const Upload = ({ socket, sender = "c1" }) => {
       <input
         ref={docRef}
         type="file"
+        accept="image/*,video/*,application/pdf,.doc,.docx"
+        capture="environment"
         onChange={handleFileSelect}
         style={{ display: "none" }}
+        disabled={uploading}
       />
     </div>
   );

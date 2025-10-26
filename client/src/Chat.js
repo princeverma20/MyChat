@@ -7,7 +7,6 @@ function Chat({ socket, username, room }) {
   const [messageList, setMessageList] = useState([]);
   const fileInputRef = useRef();
 
-  // Send text message
   const sendTextMessage = () => {
     if (!currentMessage.trim()) return;
 
@@ -39,7 +38,6 @@ function Chat({ socket, username, room }) {
     socket.emit("send_message", msg);
   };
 
-  // Handle file selection
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -56,16 +54,14 @@ function Chat({ socket, username, room }) {
     e.target.value = "";
   };
 
-  // Open URL in new tab
   const openInNewTab = (url) => {
     const link = document.createElement("a");
     link.href = url;
-    link.download = url.split("/").pop(); // use filename
+    link.download = url.split("/").pop(); // filename
     link.target = "_blank";
     link.click();
   };
 
-  // Listen for messages (avoid duplicates)
   useEffect(() => {
     socket.emit("join_room", { username, room });
 
@@ -78,21 +74,31 @@ function Chat({ socket, username, room }) {
     return () => socket.off("receive_message", handleMessage);
   }, [socket, username, room]);
 
-  // Render messages
   const renderMessageContent = (msg) => {
     if (msg.type === "text") return <p id="message">{msg.message}</p>;
 
     if (msg.type === "image") {
       return (
-        <img
-          src={msg.content}
-          alt={msg.name}
-          style={{ maxWidth: "300px", borderRadius: "6px", cursor: "pointer" }}
-          onClick={() => openInNewTab(msg.content)}
-        />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+          }}
+        >
+          <img
+            src={msg.content}
+            alt={msg.name}
+            style={{
+              maxWidth: "300px",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+            onClick={() => openInNewTab(msg.content)}
+          />
+        </div>
       );
     }
-
     if (msg.type === "file") {
       return (
         <div
@@ -156,6 +162,8 @@ function Chat({ socket, username, room }) {
             ref={fileInputRef}
             style={{ display: "none" }}
             onChange={handleFileChange}
+            accept="image/*,video/*,application/pdf,.doc,.docx"
+            capture="environment"
           />
           <button onClick={sendTextMessage}>&#9658;</button>
         </div>
