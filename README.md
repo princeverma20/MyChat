@@ -1,6 +1,6 @@
 # Chat Application with File & Image Upload
 
-![Chat UI Screenshot](./image.jpg)
+![Chat UI Screenshot](./LiveChatImage.png)
 
 ## Description
 
