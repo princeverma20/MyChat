@@ -46,7 +46,6 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       Key: `uploads/${Date.now()}-${cleanFilename}`,
       Body: req.file.buffer,
       ContentType: req.file.mimetype,
-      ACL: "public-read",
     };
 
     const parallelUpload = new Upload({ client: s3Client, params });
