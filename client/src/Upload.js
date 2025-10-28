@@ -8,8 +8,11 @@ export const uploadAndSend = async (file, sender, socket, setUploading) => {
   try {
     setUploading && setUploading(true);
 
-    const SERVER_URL =
-      process.env.REACT_APP_SERVER_URL || "http://localhost:9000";
+    const SERVER_URL = process.env.REACT_APP_SERVER_URL
+      ? process.env.REACT_APP_SERVER_URL
+      : window.location.hostname === "localhost"
+      ? "http://localhost:9000"
+      : "http://192.168.1.38:9000";
 
     const res = await axios.post(`${SERVER_URL}/upload`, formData, {
       headers: { "Content-Type": "multipart/form-data" },

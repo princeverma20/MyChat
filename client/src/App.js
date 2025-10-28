@@ -4,7 +4,14 @@ import io from "socket.io-client";
 import Chat from "./Chat";
 
 const socket = io.connect(
-  process.env.REACT_APP_SERVER_URL || "http://localhost:9000"
+  process.env.REACT_APP_SERVER_URL
+    ? process.env.REACT_APP_SERVER_URL
+    : window.location.hostname === "localhost"
+    ? "http://localhost:9000"
+    : "http://192.168.1.38:9000",
+  {
+    transports: ["websocket"],
+  }
 );
 
 function App() {
