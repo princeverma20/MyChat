@@ -52,7 +52,7 @@ Create `.env` in `/client` folder:
 
 The app is deployed live at:
 
-[https://mychat-client2.onrender.com](https://mychat-client2.onrender.com)
+[https://mychat-client2.onrender.com](https://kori-mychat-client2.onrender.com/)
 
 
 
