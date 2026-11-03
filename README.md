@@ -1,6 +1,6 @@
 # Chat Application with File & Image Upload
 
-![Chat UI Screenshot](./Chat Image.png)
+![Chat UI Screenshot](./Chat%20Image.png)
 
 ## Technologies Used
 
